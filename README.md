@@ -1,1 +1,1 @@
-# advent-of-code-collaborative
+# advent-of-code-leaderboard-bot
