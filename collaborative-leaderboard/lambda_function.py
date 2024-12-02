@@ -6,9 +6,6 @@ from botocore.exceptions import ClientError
 import os
 import requests
 
-from dotenv import load_dotenv
-load_dotenv()
-
 from slack_sdk import WebClient
 
 
@@ -160,7 +157,7 @@ def send_to_slack(string):
     return response
 
 
-if __name__ == '__main__':
+def lambda_handler(event, context):
     leaderboard = get_leaderboard()
 
     members = leaderboard['members']
@@ -169,5 +166,10 @@ if __name__ == '__main__':
     table = get_table(stars, members)
     string = get_string(table)
     response = send_to_slack(string)
-    print(response.status_code)
+    print(response)
+
+    return {
+        'statusCode': 200,
+        'body': response.status_code,
+    }
 
