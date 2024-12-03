@@ -128,20 +128,6 @@ def send_to_slack(string):
                     "elements": [
                         {
                             "type": "text",
-                            "text": "Let's see if we can complete all 30 challenges!"
-                        },
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "rich_text",
-            "elements": [
-                {
-                    "type": "rich_text_section",
-                    "elements": [
-                        {
-                            "type": "text",
                             "text": string
                         },
                     ]
