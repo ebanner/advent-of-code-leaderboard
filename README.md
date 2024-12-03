@@ -16,9 +16,9 @@ The idea is to see how many days us as a community can solve!
 
 :star::star:
 
-:star:★
+:star: ★
 
-:star:★
+:star: ★
 
 :star:
 
