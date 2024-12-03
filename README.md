@@ -8,7 +8,7 @@ The idea is to see how many days us as a community can solve!
 
 ### :christmas_tree: VC Advent of Code Collaborative Leaderboard
 
-<img width="359" alt="image" src="https://github.com/user-attachments/assets/3460c2d9-9bc0-4b90-80c4-3c5a7271a16b">
+<img width="452" alt="image" src="https://github.com/user-attachments/assets/627af1d3-ca9b-411b-9b63-b47513f23bbd">
 
 I found the default Advent of Code leaderboard to increase individual competition, which I didn't like too much.
 
