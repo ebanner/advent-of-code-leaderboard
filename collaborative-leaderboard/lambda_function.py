@@ -8,8 +8,11 @@ import requests
 
 from slack_sdk import WebClient
 
+from datetime import datetime, timedelta
 
-CURRENT_DAY = 1
+est_now = datetime.utcnow() - timedelta(hours=5)
+CURRENT_DAY = est_now.day
+
 
 def get_slack_token():
     secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
@@ -114,7 +117,7 @@ def send_to_slack(string):
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": "🎄 Advent of Code progress"
+                "text": "🎄 VC Advent of Code Collaborative Leaderboard"
             }
         },
         {

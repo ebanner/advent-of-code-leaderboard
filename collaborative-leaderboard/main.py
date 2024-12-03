@@ -11,8 +11,11 @@ load_dotenv()
 
 from slack_sdk import WebClient
 
+from datetime import datetime
 
-CURRENT_DAY = 2
+
+CURRENT_DAY = datetime.today().day
+
 
 def get_slack_token():
     secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
@@ -117,22 +120,8 @@ def send_to_slack(string):
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": "🎄 Advent of Code progress"
+                "text": "🎄 VC Advent of Code Collaborative Leaderboard"
             }
-        },
-        {
-            "type": "rich_text",
-            "elements": [
-                {
-                    "type": "rich_text_section",
-                    "elements": [
-                        {
-                            "type": "text",
-                            "text": "Let's see if we can complete all 30 challenges!"
-                        },
-                    ]
-                }
-            ]
         },
         {
             "type": "rich_text",
