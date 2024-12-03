@@ -1,4 +1,4 @@
-# advent-of-code-leaderboard-bot
+# advent-of-code-leaderboard
 
 ## Collaborative Leaderboard
 
