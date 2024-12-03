@@ -76,16 +76,15 @@ def get_grid(stars, members):
 
     grid = [[0]*CURRENT_DAY for _ in range(num_members)]
 
-    day = 1
-
-    for j in range(1, day+1):
-        num_gold = stars[str(j)]['gold']
+    for day in range(1, CURRENT_DAY+1):
+        j = day-1
+        num_gold = stars[str(day)]['gold']
         for i in range(num_gold):
-            grid[i][j-1] = '⭐️'
+            grid[i][j] = '⭐️'
 
-        num_silver = stars[str(j)]['silver']
+        num_silver = stars[str(day)]['silver']
         for i in range(num_silver):
-            grid[num_gold+i+1][j-1] = '★'
+            grid[num_gold+i][j] = '★'
 
     return grid
 
@@ -93,7 +92,7 @@ def get_grid(stars, members):
 def get_table(stars, members):
     grid = get_grid(stars, members)
     day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'][:CURRENT_DAY]
-    table = day_numbers
+    table = [day_numbers]
     table.extend(grid)
     return table
 
@@ -170,6 +169,6 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': response.status_code,
+        'body': string
     }
 
