@@ -10,7 +10,7 @@ The idea is to see how many days us as a community can solve!
 
 <img width="452" alt="image" src="https://github.com/user-attachments/assets/627af1d3-ca9b-411b-9b63-b47513f23bbd">
 
-I found the default Advent of Code leaderboard to increase individual competition, which I didn't like too much.
+I felt like the default Advent of Code leaderboard increased the feeling individual competition, which I didn't like too much.
 
 ## Star Alerts
 
