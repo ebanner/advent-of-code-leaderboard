@@ -123,7 +123,7 @@ def lambda_handler(event, context):
     if not new_rows.empty:
         for _, row in new_rows.iterrows():
             star_emoji = '⭐️' if row.star == '1' else '★'
-            message = f'{row["name"]} got a Star {star_emoji} for day {row.day}! Woohoo! 🥳'
+            message = f'{row["name"]} got a Star {star_emoji} for Day {row.day}! Woohoo! 🥳'
             response = slack_client.chat_postMessage(channel=CHANNEL_ID, text=message)
             print(response)
 
