@@ -1,5 +1,7 @@
 # advent-of-code-leaderboard
 
+Slackbot which outputs a daily collaborative leaderboard and alerts when someone gets a Star ⭐️
+
 ## Collaborative Leaderboard
 
 The idea is to see how many days us as a community can solve!
