@@ -91,7 +91,7 @@ def get_records(leaderboard):
     for member_id, member in members.items():
         completion_days = member['completion_day_level']
 
-        for day in range(1, DAY+1):
+        for day in range(1, CURRENT_DAY+1):
             for star_level, info in completion_days.get(str(day), {}).items():
                 row = {
                     'id': member_id,
@@ -125,11 +125,11 @@ if __name__ == '__main__':
     if not new_rows.empty:
         for _, row in new_rows.iterrows():
             star_emoji = '⭐️' if row.star == '1' else '★'
-            message = f'{row["name"]} got a star {star_emoji} for day {row.day}! {star_emoji} Woohoo! 🥳'
+            message = f'{row["name"]} got a Star {star_emoji} for day {row.day}! Woohoo! 🥳'
             response = slack_client.chat_postMessage(channel=CHANNEL_ID, text=message)
             print(response)
 
-        put(KEY, df)
+        put(KEY, df.to_json())
 
     print(df)
 
