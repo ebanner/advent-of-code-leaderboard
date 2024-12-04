@@ -11,7 +11,7 @@ load_dotenv()
 
 from slack_sdk import WebClient
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 CURRENT_DAY = datetime.today().day
@@ -46,7 +46,7 @@ def get_slack_token():
 
 slack_token = get_slack_token()
 slack_client = WebClient(token=slack_token)
-CHANNEL_ID = 'general'  # Replace with the ID of your Slack channel
+CHANNEL_ID = 'C083KCULCMB' # advent-of-code channel ID
 
 
 def get_leaderboard():
@@ -114,13 +114,34 @@ def get_string(table):
     return string
 
 
-def send_to_slack(string):
+def get_blocks(string):
     blocks = [
         {
-            "type": "header",
+            "type": "section",
             "text": {
-                "type": "plain_text",
-                "text": "🎄 VC Advent of Code Collaborative Leaderboard"
+                "type": "mrkdwn",
+                "text": f"*:christmas_tree: Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|Day {CURRENT_DAY}>*"
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f" "
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*VC Collaborative Leaderboard*"
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f" "
             }
         },
         {
@@ -139,13 +160,23 @@ def send_to_slack(string):
         },
     ]
 
-    response = slack_client.chat_postMessage(
-        channel=CHANNEL_ID,
-        text=string,
-        blocks=blocks,
-    )
+    return blocks
 
-    return response
+
+def get_leaderboard_thread_ts():
+    # Fetch today's messages
+    now = datetime.utcnow()
+    start_timestamp = datetime(now.year, now.month, now.day).timestamp()
+    response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
+    messages = response['messages']
+
+    leaderboard_thread_ts = None
+    for message in messages:
+        if ':one::two::three::four:' in message['text']:
+            leaderboard_thread_ts = message['ts']
+            return leaderboard_thread_ts
+    else:
+        return None
 
 
 if __name__ == '__main__':
@@ -156,7 +187,20 @@ if __name__ == '__main__':
     stars = get_stars(leaderboard, members)
     table = get_table(stars, members)
     string = get_string(table)
-    print(string)
-    response = send_to_slack(string)
-    print(response.status_code)
+
+    leaderboard_thread_ts = get_leaderboard_thread_ts()    
+    blocks = get_blocks(string)
+    if leaderboard_thread_ts:
+        response = slack_client.chat_update(
+            channel=CHANNEL_ID,
+            ts=leaderboard_thread_ts,
+            blocks=blocks
+        )
+    else:
+        response = slack_client.chat_postMessage(
+            channel=CHANNEL_ID,
+            blocks=blocks,
+        )
+
+    print(response)
 
