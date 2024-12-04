@@ -1,5 +1,9 @@
 import json
 
+from bs4 import BeautifulSoup
+
+import requests
+
 import boto3
 from botocore.exceptions import ClientError
 
@@ -114,13 +118,13 @@ def get_string(table):
     return string
 
 
-def get_blocks(string):
+def get_blocks(title, string):
     blocks = [
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*:christmas_tree: Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|Day {CURRENT_DAY}>*"
+                "text": f"*:christmas_tree: Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|{title}>*"
             }
         },
         {
@@ -179,6 +183,23 @@ def get_leaderboard_thread_ts():
         return None
 
 
+def get_title():
+    response = requests.get(f'https://adventofcode.com/2024/day/{CURRENT_DAY}')
+    html_string = response.text
+
+    soup = BeautifulSoup(html_string, "html.parser")
+    day_desc = soup.find("article", class_="day-desc")
+    if day_desc:
+        h2 = day_desc.find("h2")
+        title = h2.text
+        if title:
+            _, title, _ = title.split('---')
+            title = title.strip()
+            return title
+        else:
+            return None
+
+
 if __name__ == '__main__':
     leaderboard = get_leaderboard()
 
@@ -188,8 +209,10 @@ if __name__ == '__main__':
     table = get_table(stars, members)
     string = get_string(table)
 
+    title = get_title()
+    blocks = get_blocks(title, string)
+
     leaderboard_thread_ts = get_leaderboard_thread_ts()    
-    blocks = get_blocks(string)
     if leaderboard_thread_ts:
         response = slack_client.chat_update(
             channel=CHANNEL_ID,
