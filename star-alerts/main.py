@@ -6,7 +6,7 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -51,7 +51,7 @@ def get_slack_token():
 
 slack_token = get_slack_token()
 slack_client = WebClient(token=slack_token)
-CHANNEL_ID = 'general'  # Replace with the ID of your Slack channel
+CHANNEL_ID = 'C083KCULCMB'  # advent-of-code channel ID
 
 
 def put(key, value):
@@ -110,6 +110,22 @@ def make_df(records):
     return df
 
 
+def get_leaderboard_thread_ts():
+    # Fetch today's messages
+    now = datetime.utcnow()
+    start_timestamp = datetime(now.year, now.month, now.day).timestamp()
+    response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
+    messages = response['messages']
+
+    leaderboard_thread_ts = None
+    for message in messages:
+        if ':one::two::three::four:' in message['text']:
+            leaderboard_thread_ts = message['ts']
+            return leaderboard_thread_ts
+    else:
+        return None
+
+
 if __name__ == '__main__':
     # Get df
     leaderboard = get_leaderboard()
@@ -123,13 +139,25 @@ if __name__ == '__main__':
     # Compare old df to df
     new_rows = df[df.get_star_ts > old_df.get_star_ts.max()]
     if not new_rows.empty:
+        leaderboard_thread_ts = get_leaderboard_thread_ts()
+        if leaderboard_thread_ts == None:
+            print('No leaderboard thread!')
+            exit(1)
+
+        print('leaderboard_thread_ts', leaderboard_thread_ts)
+
         for _, row in new_rows.iterrows():
             star_emoji = '⭐️' if row.star == '2' else '★'
             message = f'{star_emoji} {row["name"]} got a Star for Day {row.day}! Woohoo! 🥳'
-            response = slack_client.chat_postMessage(channel=CHANNEL_ID, text=message)
+            response = slack_client.chat_postMessage(
+                channel=CHANNEL_ID,
+                text=message,
+                thread_ts=leaderboard_thread_ts,
+            )
             print(response)
 
-        put(KEY, df.to_json())
+        response = put(KEY, df.to_json())
+        print(response)
 
-    print(df)
+    print(df.head())
 
