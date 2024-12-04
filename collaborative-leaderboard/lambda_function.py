@@ -114,10 +114,31 @@ def get_string(table):
 def send_to_slack(string):
     blocks = [
         {
-            "type": "header",
+            "type": "section",
             "text": {
-                "type": "plain_text",
-                "text": "🎄 VC Advent of Code Collaborative Leaderboard"
+                "type": "mrkdwn",
+                "text": f"*:christmas_tree: VC Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|Day {CURRENT_DAY}>*"
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f" "
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*VC Collaborative Leaderboard*"
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f" "
             }
         },
         {
