@@ -117,7 +117,7 @@ def send_to_slack(string):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*:christmas_tree: VC Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|Day {CURRENT_DAY}>*"
+                "text": f"*:christmas_tree: Advent of Code — <https://adventofcode.com/2024/day/{CURRENT_DAY}|Day {CURRENT_DAY}>*"
             }
         },
         {
