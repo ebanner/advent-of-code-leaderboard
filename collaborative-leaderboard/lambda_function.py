@@ -43,7 +43,7 @@ def get_slack_token():
 
 slack_token = get_slack_token()
 slack_client = WebClient(token=slack_token)
-CHANNEL_ID = 'general'  # Replace with the ID of your Slack channel
+CHANNEL_ID = 'advent-of-code'
 
 
 def get_leaderboard():
