@@ -14,6 +14,6 @@ I felt like the default Advent of Code leaderboard puts too much emphasis on ind
 
 ## Star Alerts
 
-Get notificatied for when someone gets a Star:
+Get notified when someone gets a Star:
 
 <img width="335" alt="image" src="https://github.com/user-attachments/assets/d8bdd3f7-7dbb-48d9-a4d6-ab8f1d627173">
