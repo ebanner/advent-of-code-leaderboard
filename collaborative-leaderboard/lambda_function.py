@@ -152,8 +152,7 @@ def get_blocks(title, string):
 
 def get_leaderboard_thread_ts():
     # Fetch today's messages
-    now = datetime.utcnow()
-    start_timestamp = datetime(now.year, now.month, now.day).timestamp()
+    start_timestamp = datetime(2024, 12, CURRENT_DAY).timestamp()
     response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
     messages = response['messages']
 

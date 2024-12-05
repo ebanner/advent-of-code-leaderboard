@@ -19,6 +19,10 @@ BUCKET = 'storage9'
 KEY = 'advent_of_code_leaderboard.json'
 
 
+est_now = datetime.utcnow() - timedelta(hours=5)
+CURRENT_DAY = est_now.day
+
+
 def get_slack_token():
     secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
     region_name = "us-east-1"
@@ -80,9 +84,6 @@ def get_leaderboard():
 
 
 def get_records(leaderboard):
-    est_now = datetime.utcnow() - timedelta(hours=5)
-    CURRENT_DAY = est_now.day
-
     members = leaderboard['members']
 
     rows = []
@@ -110,8 +111,7 @@ def make_df(records):
 
 def get_leaderboard_thread_ts():
     # Fetch today's messages
-    now = datetime.utcnow()
-    start_timestamp = datetime(now.year, now.month, now.day).timestamp()
+    start_timestamp = datetime(2024, 12, CURRENT_DAY).timestamp()
     response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
     messages = response['messages']
 
