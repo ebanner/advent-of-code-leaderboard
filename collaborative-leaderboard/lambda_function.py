@@ -128,21 +128,7 @@ def get_blocks(title, string):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f" "
-            }
-        },
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
                 "text": f"*VC Collaborative Leaderboard*"
-            }
-        },
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": f" "
             }
         },
         {
