@@ -113,17 +113,10 @@ def make_df(records):
 
 
 def get_leaderboard_thread_ts():
-    # Fetch today's messages
-    start_timestamp = datetime(2024, 12, CURRENT_DAY).timestamp()
-    response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
-    messages = response['messages']
-
-    leaderboard_thread_ts = None
-    for message in messages:
-        if ':one::two::three::four:' in message['text']:
-            leaderboard_thread_ts = message['ts']
-            return leaderboard_thread_ts
-    else:
+    try:
+        leaderboard_thread_ts = get(str(CURRENT_DAY))
+        return leaderboard_thread_ts
+    except:
         return None
 
 

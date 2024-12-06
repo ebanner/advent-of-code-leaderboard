@@ -17,6 +17,23 @@ from datetime import datetime, timedelta
 est_now = datetime.utcnow() - timedelta(hours=5)
 CURRENT_DAY = est_now.day
 
+s3 = boto3.client('s3')
+
+BUCKET = 'storage9'
+
+
+def put(key, value):
+    s3.put_object(Bucket=BUCKET, Key=key, Body=value)
+
+
+def get(key):
+    """If there is no key entry then return None"""
+
+    object = s3.get_object(Bucket=BUCKET, Key=key)
+
+    value = object['Body'].read().decode('utf-8')
+    return value
+
 
 def get_slack_token():
     secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
@@ -151,17 +168,10 @@ def get_blocks(title, string):
 
 
 def get_leaderboard_thread_ts():
-    # Fetch today's messages
-    start_timestamp = datetime(2024, 12, CURRENT_DAY).timestamp()
-    response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
-    messages = response['messages']
-
-    leaderboard_thread_ts = None
-    for message in messages:
-        if ':one::two::three::four:' in message['text']:
-            leaderboard_thread_ts = message['ts']
-            return leaderboard_thread_ts
-    else:
+    try:
+        leaderboard_thread_ts = get(str(CURRENT_DAY))
+        return leaderboard_thread_ts
+    except:
         return None
 
 
@@ -206,8 +216,7 @@ def lambda_handler(event, context):
             channel=CHANNEL_ID,
             blocks=blocks,
         )
-
-    print(response)
+        put(str(CURRENT_DAY), response['ts'])
 
     return {
         'statusCode': 200,

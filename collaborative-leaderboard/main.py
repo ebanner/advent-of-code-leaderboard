@@ -18,7 +18,24 @@ from slack_sdk import WebClient
 from datetime import datetime, timedelta
 
 
+s3 = boto3.client('s3')
+
+BUCKET = 'storage9'
+
 CURRENT_DAY = datetime.today().day
+
+
+def put(key, value):
+    s3.put_object(Bucket=BUCKET, Key=key, Body=value)
+
+
+def get(key):
+    """If there is no key entry then return None"""
+
+    object = s3.get_object(Bucket=BUCKET, Key=key)
+
+    value = object['Body'].read().decode('utf-8')
+    return value
 
 
 def get_slack_token():
@@ -154,17 +171,10 @@ def get_blocks(title, string):
 
 
 def get_leaderboard_thread_ts():
-    # Fetch today's messages
-    start_timestamp = datetime(2024, 12, CURRENT_DAY).timestamp()
-    response = slack_client.conversations_history(channel=CHANNEL_ID, oldest=start_timestamp)
-    messages = response['messages']
-
-    leaderboard_thread_ts = None
-    for message in messages:
-        if ':one::two::three::four:' in message['text']:
-            leaderboard_thread_ts = message['ts']
-            return leaderboard_thread_ts
-    else:
+    try:
+        leaderboard_thread_ts = get(str(CURRENT_DAY))
+        return leaderboard_thread_ts
+    except:
         return None
 
 
@@ -199,16 +209,24 @@ if __name__ == '__main__':
 
     leaderboard_thread_ts = get_leaderboard_thread_ts()    
     if leaderboard_thread_ts:
-        response = slack_client.chat_update(
-            channel=CHANNEL_ID,
-            ts=leaderboard_thread_ts,
-            blocks=blocks
-        )
+        try:
+            response = slack_client.chat_update(
+                channel=CHANNEL_ID,
+                ts=leaderboard_thread_ts,
+                blocks=blocks
+            )
+        except:
+            response = slack_client.chat_postMessage(
+                channel=CHANNEL_ID,
+                blocks=blocks,
+            )
+            put(str(CURRENT_DAY), response['ts'])
     else:
         response = slack_client.chat_postMessage(
             channel=CHANNEL_ID,
             blocks=blocks,
         )
+        put(str(CURRENT_DAY), response['ts'])
 
     print(response)
 
