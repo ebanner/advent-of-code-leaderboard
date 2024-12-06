@@ -8,7 +8,7 @@ The idea is to see how many days us as a community can solve!
 
 ### :christmas_tree: VC Advent of Code Collaborative Leaderboard
 
-<img width="378" alt="image" src="https://github.com/user-attachments/assets/ca8b1eb3-6814-4500-b668-a122712bfc68">
+<img width="375" alt="image" src="https://github.com/user-attachments/assets/4fbacc75-70d4-4b2f-bc2f-203d9127e002">
 
 I felt like the default Advent of Code leaderboard puts too much emphasis on individual competition, which I found unpleasant (it activates my ego too much ha).
 
@@ -16,4 +16,4 @@ I felt like the default Advent of Code leaderboard puts too much emphasis on ind
 
 Get notified when someone gets a Star:
 
-<img width="335" alt="image" src="https://github.com/user-attachments/assets/d8bdd3f7-7dbb-48d9-a4d6-ab8f1d627173">
+<img width="375" alt="image" src="https://github.com/user-attachments/assets/bd843851-fac8-47d1-a346-0c2488834f65">
