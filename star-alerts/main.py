@@ -22,12 +22,17 @@ BUCKET = 'storage9'
 KEY = 'advent_of_code_leaderboard.json'
 
 
-est_now = datetime.utcnow() - timedelta(hours=5)
-CURRENT_DAY = est_now.day
+CURRENT_DAY = datetime.today().day
+
+
+SLACKBOT_TOKEN_NAME = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN" #"VIRTUAL_COFFEE_SLACKBOT_TOKEN" 
+CHANNEL_ID = 'U04CYG7MEKB' #'C083KCULCMB' #'C01CZ6A66DP'  #'U06RD19T690'
+
+LEADERBOARD_THREAD_TS_KEY_NAME = f'{CURRENT_DAY}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
 
 
 def get_slack_token():
-    secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
+    secret_name = SLACKBOT_TOKEN_NAME
     region_name = "us-east-1"
 
     # Create a Secrets Manager client
@@ -55,7 +60,6 @@ def get_slack_token():
 
 slack_token = get_slack_token()
 slack_client = WebClient(token=slack_token)
-CHANNEL_ID = 'C083KCULCMB'  # advent-of-code channel ID
 
 
 def put(key, value):
@@ -114,7 +118,7 @@ def make_df(records):
 
 def get_leaderboard_thread_ts():
     try:
-        leaderboard_thread_ts = get(str(CURRENT_DAY))
+        leaderboard_thread_ts = get(LEADERBOARD_THREAD_TS_KEY_NAME)
         return leaderboard_thread_ts
     except:
         return None
