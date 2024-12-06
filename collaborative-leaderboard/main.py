@@ -25,8 +25,8 @@ BUCKET = 'storage9'
 CURRENT_DAY = datetime.today().day
 
 
-SLACKBOT_TOKEN_NAME = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
-CHANNEL_ID = 'C083KCULCMB'
+SLACKBOT_TOKEN_NAME = "VIRTUAL_COFFEE_SLACKBOT_TOKEN" #"EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
+CHANNEL_ID = 'C01CZ6A66DP' #'C083KCULCMB' #'U04CYG7MEKB' #'U06RD19T690'
 
 LEADERBOARD_THREAD_TS_KEY_NAME = f'{CURRENT_DAY}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
 
@@ -153,23 +153,9 @@ def get_blocks(title, string):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*VC Collaborative Leaderboard*"
+                "text": f"*VC Collaborative Leaderboard*\n\n{string}"
             }
-        },
-        {
-            "type": "rich_text",
-            "elements": [
-                {
-                    "type": "rich_text_section",
-                    "elements": [
-                        {
-                            "type": "text",
-                            "text": string
-                        },
-                    ]
-                }
-            ]
-        },
+        }
     ]
 
     return blocks
