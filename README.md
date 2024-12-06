@@ -21,3 +21,7 @@ Get notified when someone gets a Star ⭐️
 The idea is to see how many days us as a community can solve!
 
 I felt like the default Advent of Code leaderboard puts too much emphasis on individual competition, which I found unpleasant (it activates my ego too much ha).
+
+## Notes
+
+Integrated into the [Virtual Coffee](https://virtualcoffee.io) slack workspace
