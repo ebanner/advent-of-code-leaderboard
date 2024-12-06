@@ -94,7 +94,7 @@ def get_grid(stars, members):
 
         num_silver = stars[str(day)]['silver']
         for i in range(num_silver):
-            grid[num_gold+i][j] = ' ★'
+            grid[num_gold+i][j] = '🥈'
 
     return grid
 
