@@ -25,6 +25,12 @@ BUCKET = 'storage9'
 CURRENT_DAY = datetime.today().day
 
 
+SLACKBOT_TOKEN_NAME = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
+CHANNEL_ID = 'C083KCULCMB'
+
+LEADERBOARD_THREAD_TS_KEY_NAME = f'{CURRENT_DAY}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
+
+
 def put(key, value):
     s3.put_object(Bucket=BUCKET, Key=key, Body=value)
 
@@ -39,7 +45,7 @@ def get(key):
 
 
 def get_slack_token():
-    secret_name = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
+    secret_name = SLACKBOT_TOKEN_NAME
     region_name = "us-east-1"
 
     # Create a Secrets Manager client
@@ -67,7 +73,6 @@ def get_slack_token():
 
 slack_token = get_slack_token()
 slack_client = WebClient(token=slack_token)
-CHANNEL_ID = 'C083KCULCMB' # advent-of-code channel ID
 
 
 def get_leaderboard():
@@ -172,7 +177,7 @@ def get_blocks(title, string):
 
 def get_leaderboard_thread_ts():
     try:
-        leaderboard_thread_ts = get(str(CURRENT_DAY))
+        leaderboard_thread_ts = get(LEADERBOARD_THREAD_TS_KEY_NAME)
         return leaderboard_thread_ts
     except:
         return None
@@ -209,24 +214,16 @@ if __name__ == '__main__':
 
     leaderboard_thread_ts = get_leaderboard_thread_ts()    
     if leaderboard_thread_ts:
-        try:
-            response = slack_client.chat_update(
-                channel=CHANNEL_ID,
-                ts=leaderboard_thread_ts,
-                blocks=blocks
-            )
-        except:
-            response = slack_client.chat_postMessage(
-                channel=CHANNEL_ID,
-                blocks=blocks,
-            )
-            put(str(CURRENT_DAY), response['ts'])
+        response = slack_client.chat_update(
+            channel=CHANNEL_ID,
+            ts=leaderboard_thread_ts,
+            blocks=blocks
+        )
     else:
         response = slack_client.chat_postMessage(
             channel=CHANNEL_ID,
             blocks=blocks,
         )
-        put(str(CURRENT_DAY), response['ts'])
+        put(LEADERBOARD_THREAD_TS_KEY_NAME, response['ts'])
 
-    print(response)
 
