@@ -23,6 +23,9 @@ s3 = boto3.client('s3')
 BUCKET = 'storage9'
 
 CURRENT_DAY = datetime.today().day
+if CURRENT_DAY > 25:
+    print('Advent of Code is over!')
+    exit(1)
 
 
 SLACKBOT_TOKEN_NAME = "VIRTUAL_COFFEE_SLACKBOT_TOKEN" #"EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
