@@ -103,41 +103,51 @@ def get_stars(leaderboard, members):
     return stars
 
 
-def get_grid(stars, members):
-    num_members = len(members)
+def get_rows(stars):
+    day_emojis = [
+        '⬛️1️⃣',
+        '⬛️2️⃣',
+        '⬛️3️⃣',
+        '⬛️4️⃣',
+        '⬛️5️⃣',
+        '⬛️6️⃣',
+        '⬛️7️⃣',
+        '⬛️8️⃣',
+        '⬛️9️⃣',
+        '⬛️🔟',
+        '1️⃣1️⃣',
+        '1️⃣2️⃣',
+        '1️⃣3️⃣',
+        '1️⃣4️⃣',
+        '1️⃣5️⃣',
+        '1️⃣6️⃣',
+        '1️⃣7️⃣',
+        '1️⃣8️⃣',
+        '1️⃣9️⃣',
+        '2️⃣0️⃣',
+        '2️⃣1️⃣',
+        '2️⃣2️⃣',
+        '2️⃣3️⃣',
+        '2️⃣4️⃣',
+        '2️⃣5️⃣',
+    ][:CURRENT_DAY]
+    rows = []
+    for day, day_emoji in zip(range(1, CURRENT_DAY+1), day_emojis):
+        day_stars = stars[str(day)]
+        row = [day_emoji] + [' '] + ['⭐️']*day_stars['gold'] + ['🥈']*day_stars['silver']
+        rows.append(row)
 
-    grid = [[0]*CURRENT_DAY for _ in range(num_members)]
-
-    for day in range(1, CURRENT_DAY+1):
-        j = day-1
-        num_gold = stars[str(day)]['gold']
-        for i in range(num_gold):
-            grid[i][j] = '⭐️'
-
-        num_silver = stars[str(day)]['silver']
-        for i in range(num_silver):
-            grid[num_gold+i][j] = '🥈'
-
-    return grid
+    return reversed(rows)
 
 
-def get_table(stars, members):
-    grid = get_grid(stars, members)
-    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][:CURRENT_DAY]
-    table = [day_numbers]
-    table.extend(grid)
-    return table
+def get_string(rows):
+    slack_leaderboard = []
+    for row in rows:
+        row_str = ''.join(row)
+        slack_leaderboard.append(row_str)
 
-
-def get_string(table):
-    lines = []
-    for row in table:
-        line = ''.join(c if c != 0 else ' ' for c in row)
-        if line.isspace():
-            break
-        lines.append(line)
-    string = '\n'.join(lines)
-    return string
+    slack_leaderboard_str = '\n'.join(slack_leaderboard)
+    return slack_leaderboard_str
 
 
 def get_blocks(title, string):
@@ -192,8 +202,8 @@ if __name__ == '__main__':
     members = leaderboard['members']
 
     stars = get_stars(leaderboard, members)
-    table = get_table(stars, members)
-    string = get_string(table)
+    rows = get_rows(stars)
+    string = get_string(rows)
 
     title = get_title()
     blocks = get_blocks(title, string)
