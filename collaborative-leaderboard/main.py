@@ -22,14 +22,14 @@ s3 = boto3.client('s3')
 
 BUCKET = 'storage9'
 
-CURRENT_DAY = datetime.today().day
+CURRENT_DAY = 13
 if CURRENT_DAY > 25:
     print('Advent of Code is over!')
     exit(1)
 
 
-SLACKBOT_TOKEN_NAME = "VIRTUAL_COFFEE_SLACKBOT_TOKEN" #"EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN"
-CHANNEL_ID = 'C01CZ6A66DP' #'C083KCULCMB' #'U04CYG7MEKB' #'U06RD19T690'
+SLACKBOT_TOKEN_NAME = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN" #"VIRTUAL_COFFEE_SLACKBOT_TOKEN" 
+CHANNEL_ID = 'C083KCULCMB' #'C01CZ6A66DP' #'U04CYG7MEKB' #'U06RD19T690'
 
 LEADERBOARD_THREAD_TS_KEY_NAME = f'{CURRENT_DAY}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
 
@@ -106,51 +106,44 @@ def get_stars(leaderboard, members):
     return stars
 
 
-def get_rows(stars):
-    day_emojis = [
-        '⬛️1️⃣',
-        '⬛️2️⃣',
-        '⬛️3️⃣',
-        '⬛️4️⃣',
-        '⬛️5️⃣',
-        '⬛️6️⃣',
-        '⬛️7️⃣',
-        '⬛️8️⃣',
-        '⬛️9️⃣',
-        '⬛️🔟',
-        '1️⃣1️⃣',
-        '1️⃣2️⃣',
-        '1️⃣3️⃣',
-        '1️⃣4️⃣',
-        '1️⃣5️⃣',
-        '1️⃣6️⃣',
-        '1️⃣7️⃣',
-        '1️⃣8️⃣',
-        '1️⃣9️⃣',
-        '2️⃣0️⃣',
-        '2️⃣1️⃣',
-        '2️⃣2️⃣',
-        '2️⃣3️⃣',
-        '2️⃣4️⃣',
-        '2️⃣5️⃣',
-    ][:CURRENT_DAY]
-    rows = []
-    for day, day_emoji in zip(range(1, CURRENT_DAY+1), day_emojis):
-        day_stars = stars[str(day)]
-        row = [day_emoji] + [' '] + ['⭐️']*day_stars['gold'] + ['🥈']*day_stars['silver']
-        rows.append(row)
+def get_grid(stars, members, start, end):
+    num_members = len(members)
 
-    return reversed(rows)
+    grid = [[0]*(end-start+1) for _ in range(num_members)]
+
+    for day in range(start, end+1):
+        j = day-start
+        num_gold = stars[str(day)]['gold']
+        for i in range(num_gold):
+            grid[i][j] = '⭐️'
+
+        num_silver = stars[str(day)]['silver']
+        for i in range(num_silver):
+            grid[num_gold+i][j] = '🥈'
+
+    return grid
 
 
-def get_string(rows):
-    slack_leaderboard = []
-    for row in rows:
-        row_str = ''.join(row)
-        slack_leaderboard.append(row_str)
+def get_table(stars, members, start=1, end=10):
+    grid = get_grid(stars, members, start, end)
+    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '1️⃣', '2️⃣', '3️⃣'][start-1:end]
+    table = [day_numbers]
+    if start > 10:
+        table.append(['1️⃣']*(end-start+1))
+        table = list(reversed(table))
+    table.extend(grid)
+    return table
 
-    slack_leaderboard_str = '\n'.join(slack_leaderboard)
-    return slack_leaderboard_str
+
+def get_string(table):
+    lines = []
+    for row in table:
+        line = ''.join(c if c != 0 else ' ' for c in row)
+        if line.isspace():
+            break
+        lines.append(line)
+    string = '\n'.join(lines)
+    return string
 
 
 def get_blocks(title, string):
@@ -205,8 +198,18 @@ if __name__ == '__main__':
     members = leaderboard['members']
 
     stars = get_stars(leaderboard, members)
-    rows = get_rows(stars)
-    string = get_string(rows)
+    stars['10'] = {'gold': 3, 'silver': 2}
+    stars['11'] = {'gold': 3, 'silver': 2}
+    stars['12'] = {'gold': 3, 'silver': 2}
+    stars['13'] = {'gold': 3, 'silver': 2}
+
+    tables = [
+        get_table(stars, members, start=1, end=10),
+        get_table(stars, members, start=11, end=13)
+    ]
+    tables = list(reversed(tables))
+
+    string = '\n\n\n'.join([get_string(table) for table in tables])
 
     title = get_title()
     blocks = get_blocks(title, string)
