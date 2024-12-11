@@ -22,7 +22,7 @@ s3 = boto3.client('s3')
 
 BUCKET = 'storage9'
 
-CURRENT_DAY = 13
+CURRENT_DAY = 11
 if CURRENT_DAY > 25:
     print('Advent of Code is over!')
     exit(1)
@@ -125,6 +125,8 @@ def get_grid(stars, members, start, end):
 
 
 def get_table(stars, members, start=1, end=10):
+    if end < start:
+        return None
     grid = get_grid(stars, members, start, end)
     day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '1️⃣', '2️⃣', '3️⃣'][start-1:end]
     table = [day_numbers]
@@ -200,14 +202,13 @@ if __name__ == '__main__':
     stars = get_stars(leaderboard, members)
     stars['10'] = {'gold': 3, 'silver': 2}
     stars['11'] = {'gold': 3, 'silver': 2}
-    stars['12'] = {'gold': 3, 'silver': 2}
-    stars['13'] = {'gold': 3, 'silver': 2}
 
-    tables = [
-        get_table(stars, members, start=1, end=10),
-        get_table(stars, members, start=11, end=13)
-    ]
-    tables = list(reversed(tables))
+    tables = []
+    table = get_table(stars, members, start=1, end=10)
+    tables.append(table)
+    table = get_table(stars, members, start=11, end=CURRENT_DAY)
+    if table != None:
+        tables.append(table)
 
     string = '\n\n\n'.join([get_string(table) for table in tables])
 
