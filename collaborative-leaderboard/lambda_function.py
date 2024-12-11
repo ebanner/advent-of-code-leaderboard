@@ -101,13 +101,13 @@ def get_stars(leaderboard, members):
     return stars
 
 
-def get_grid(stars, members):
+def get_grid(stars, members, start, end):
     num_members = len(members)
 
-    grid = [[0]*CURRENT_DAY for _ in range(num_members)]
+    grid = [[0]*(end-start+1) for _ in range(num_members)]
 
-    for day in range(1, CURRENT_DAY+1):
-        j = day-1
+    for day in range(start, end+1):
+        j = day-start
         num_gold = stars[str(day)]['gold']
         for i in range(num_gold):
             grid[i][j] = '⭐️'
@@ -119,10 +119,15 @@ def get_grid(stars, members):
     return grid
 
 
-def get_table(stars, members):
-    grid = get_grid(stars, members)
-    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][:CURRENT_DAY]
+def get_table(stars, members, start=1, end=10):
+    if end < start:
+        return None
+    grid = get_grid(stars, members, start, end)
+    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '1️⃣', '2️⃣', '3️⃣'][start-1:end]
     table = [day_numbers]
+    if start > 10:
+        table.append(['1️⃣']*(end-start+1))
+        table = list(reversed(table))
     table.extend(grid)
     return table
 
@@ -190,8 +195,15 @@ def lambda_handler(event, context):
     members = leaderboard['members']
 
     stars = get_stars(leaderboard, members)
-    table = get_table(stars, members)
-    string = get_string(table)
+
+    tables = []
+    table = get_table(stars, members, start=1, end=10)
+    tables.append(table)
+    table = get_table(stars, members, start=11, end=CURRENT_DAY)
+    if table != None:
+        tables.append(table)
+
+    string = '\n\n\n'.join([get_string(table) for table in tables])
 
     title = get_title()
     blocks = get_blocks(title, string)
