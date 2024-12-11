@@ -130,23 +130,23 @@ def transpose(rows):
     return transposed_rows
 
 
-def get_rows(stars, start, end):
+def get_rows(stars, start, end, compact=False):
     day_emojis = [None, '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
 
     rows = []
     for day in range(start, end+1):
         row = []
         num_gold = stars[str(day)]['gold']
-        row.append('⭐️')
-        if num_gold > 3:
-            row.append('⭐️')
+        if not compact:
+            for _ in range(num_gold):
+                row.append('⭐️')
         else:
-            row.append(0)
-        if num_gold > 8:
             row.append('⭐️')
-        else:
-            row.append(0)
-        row.append(day_emojis[num_gold])
+            if num_gold > 4:
+                row.append('⭐️')
+            if num_gold > 8:
+                row.append('⭐️')
+            # row.append(day_emojis[num_gold])
 
         num_silver = stars[str(day)]['silver']
         for _ in range(num_silver):
@@ -157,11 +157,11 @@ def get_rows(stars, start, end):
     return transpose(fill(rows))
 
 
-def get_table(stars, members, start=1, end=10):
-    if end < start:
-        return None
-    grid = get_rows(stars, start, end)
-    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '1️⃣', '2️⃣', '3️⃣'][start-1:end]
+def get_table(stars, members, start=1, end=10, compact=False):
+    grid = get_rows(stars, start, end, compact)
+    start_idx = start - 1
+    end_idx = end - 1
+    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][start_idx%10:end_idx%10+1]
     table = [day_numbers]
     table.extend(grid)
     return table
@@ -229,9 +229,12 @@ if __name__ == '__main__':
 
     stars = get_stars(leaderboard, members)
 
-    table = get_table(stars, members, start=1, end=10)
+    tables = [
+        get_table(stars, members, start=1, end=10, compact=True),
+        get_table(stars, members, start=11, end=11)
+    ]
 
-    string = get_string(table)
+    string = '\n\n'.join(get_string(table) for table in tables)
 
     title = get_title()
     blocks = get_blocks(title, string)
