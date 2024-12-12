@@ -24,4 +24,4 @@ I felt like the default Advent of Code leaderboard puts too much emphasis on ind
 
 ## Notes
 
-Integrated into the [Virtual Coffee](https://virtualcoffee.io) slack workspace ✅
+Integrated into the [Virtual Coffee](https://virtualcoffee.io) slack workspace ☕️
