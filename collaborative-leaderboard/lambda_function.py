@@ -101,33 +101,63 @@ def get_stars(leaderboard, members):
     return stars
 
 
-def get_grid(stars, members, start, end):
-    num_members = len(members)
+def fill(rows):
+    max_row_len = 2
+    for row in rows:
+        max_row_len = max(max_row_len, len(row))
 
-    grid = [[0]*(end-start+1) for _ in range(num_members)]
+    for row in rows:
+        if len(row) < max_row_len:
+            for _ in range(max_row_len-len(row)):
+                row.append(0)
+    return rows
 
+
+def transpose(rows):
+    n = len(rows)
+    m = len(rows[0])
+
+    transposed_rows = [[0]*n for _ in range(m)]
+    for i in range(m):
+        for j in range(n):
+            transposed_rows[i][j] = rows[j][i]
+
+    return transposed_rows
+
+
+def get_rows(stars, start, end, compact=False):
+    day_emojis = [None, '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
+
+    rows = []
     for day in range(start, end+1):
-        j = day-start
+        row = []
         num_gold = stars[str(day)]['gold']
-        for i in range(num_gold):
-            grid[i][j] = '⭐️'
+        if not compact:
+            for _ in range(num_gold):
+                row.append('⭐️')
+        else:
+            row.append('⭐️')
+            if num_gold > 4:
+                row.append('⭐️')
+            if num_gold > 8:
+                row.append('⭐️')
+            # row.append(day_emojis[num_gold])
 
         num_silver = stars[str(day)]['silver']
-        for i in range(num_silver):
-            grid[num_gold+i][j] = '🥈'
+        for _ in range(num_silver):
+            row.append('🥈')
 
-    return grid
+        rows.append(row)
+
+    return transpose(fill(rows))
 
 
-def get_table(stars, members, start=1, end=10):
-    if end < start:
-        return None
-    grid = get_grid(stars, members, start, end)
-    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '1️⃣', '2️⃣', '3️⃣'][start-1:end]
+def get_table(stars, members, start=1, end=10, compact=False):
+    grid = get_rows(stars, start, end, compact)
+    start_idx = start - 1
+    end_idx = end - 1
+    day_numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'][start_idx%10:end_idx%10+1]
     table = [day_numbers]
-    if start > 10:
-        table.append(['1️⃣']*(end-start+1))
-        table = list(reversed(table))
     table.extend(grid)
     return table
 
@@ -135,9 +165,7 @@ def get_table(stars, members, start=1, end=10):
 def get_string(table):
     lines = []
     for row in table:
-        line = ''.join(c if c != 0 else ' ' for c in row)
-        if line.isspace():
-            break
+        line = ''.join(c if c != 0 else '⬛️' for c in row)
         lines.append(line)
     string = '\n'.join(lines)
     return string
@@ -196,14 +224,12 @@ def lambda_handler(event, context):
 
     stars = get_stars(leaderboard, members)
 
-    tables = []
-    table = get_table(stars, members, start=1, end=10)
-    tables.append(table)
-    table = get_table(stars, members, start=11, end=CURRENT_DAY)
-    if table != None:
-        tables.append(table)
+    tables = [
+        get_table(stars, members, start=1, end=10, compact=True),
+        get_table(stars, members, start=11, end=CURRENT_DAY)
+    ]
 
-    string = '\n\n\n'.join([get_string(table) for table in tables])
+    string = '\n\n'.join(get_string(table) for table in tables)
 
     title = get_title()
     blocks = get_blocks(title, string)
