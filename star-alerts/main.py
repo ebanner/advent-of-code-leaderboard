@@ -21,14 +21,10 @@ BUCKET = 'storage9'
 
 KEY = 'advent_of_code_leaderboard.json'
 
-
 CURRENT_DAY = datetime.today().day
 
-
 SLACKBOT_TOKEN_NAME = "EDWARDS_SLACKBOT_DEV_WORKSPACE_TOKEN" #"VIRTUAL_COFFEE_SLACKBOT_TOKEN" 
-CHANNEL_ID = 'U04CYG7MEKB' #'C083KCULCMB' #'C01CZ6A66DP'  #'U06RD19T690'
-
-LEADERBOARD_THREAD_TS_KEY_NAME = f'{CURRENT_DAY}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
+CHANNEL_ID = 'C083KCULCMB' #'U04CYG7MEKB' #'C01CZ6A66DP'  #'U06RD19T690'
 
 
 def get_slack_token():
@@ -116,9 +112,13 @@ def make_df(records):
     return df
 
 
-def get_leaderboard_thread_ts():
+def get_leaderboard_thread_ts(day=None):
+    if not day:
+        day = CURRENT_DAY
+
+    leaderboard_thread_ts_key_name = f'{day}-{CHANNEL_ID}-{SLACKBOT_TOKEN_NAME}'
     try:
-        leaderboard_thread_ts = get(LEADERBOARD_THREAD_TS_KEY_NAME)
+        leaderboard_thread_ts = get(leaderboard_thread_ts_key_name)
         return leaderboard_thread_ts
     except:
         return None
@@ -137,14 +137,14 @@ if __name__ == '__main__':
     # Compare old df to df
     new_rows = df[df.get_star_ts > old_df.get_star_ts.max()]
     if not new_rows.empty:
-        leaderboard_thread_ts = get_leaderboard_thread_ts()
-        if leaderboard_thread_ts == None:
-            print('No leaderboard thread!')
-            exit(1)
-
-        print('leaderboard_thread_ts', leaderboard_thread_ts)
-
         for _, row in new_rows.iterrows():
+            leaderboard_thread_ts = get_leaderboard_thread_ts(row.day)
+            if leaderboard_thread_ts == None:
+                print('No leaderboard thread!')
+                continue
+
+            print('leaderboard_thread_ts', leaderboard_thread_ts)
+
             star_emoji = '⭐️' if row.star == '2' else '★'
             message = f'{star_emoji} {row["name"]} got a Star for Day {row.day}! Woohoo! 🥳'
             response = slack_client.chat_postMessage(
