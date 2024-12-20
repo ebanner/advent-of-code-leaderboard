@@ -137,7 +137,7 @@ def get_rows(stars, start, end, compact=False):
                 row.append('⭐️')
         else:
             row.append('⭐️')
-            if num_gold > 4:
+            if num_gold > 5:
                 row.append('⭐️')
             if num_gold > 8:
                 row.append('⭐️')
@@ -153,6 +153,8 @@ def get_rows(stars, start, end, compact=False):
 
 
 def get_table(stars, members, start=1, end=10, compact=False):
+    if end < start:
+        return []
     grid = get_rows(stars, start, end, compact)
     start_idx = start - 1
     end_idx = end - 1
@@ -226,7 +228,8 @@ def lambda_handler(event, context):
 
     tables = [
         get_table(stars, members, start=1, end=10, compact=True),
-        get_table(stars, members, start=11, end=CURRENT_DAY)
+        get_table(stars, members, start=11, end=20),
+        get_table(stars, members, start=21, end=CURRENT_DAY),
     ]
 
     string = '\n\n'.join(get_string(table) for table in tables)
