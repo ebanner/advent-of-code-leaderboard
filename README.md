@@ -8,13 +8,13 @@ Slackbot which posts a daily collaborative AoC leaderboard (updated throughout t
 
 Updates every 15 minutes using the [Advent of Code](https://adventofcode.com) API
 
-<img width="373" alt="image" src="https://github.com/user-attachments/assets/5a3de44f-a3f7-49fa-9915-f5cfb2280810">
+<img width="373" alt="393325994-5a3de44f-a3f7-49fa-9915-f5cfb2280810" src="https://github.com/user-attachments/assets/3a4517e4-1356-49ae-aa5e-6b866b36453a" />
 
 ## Star Alerts
 
 Get notified when someone gets a Star ⭐️
 
-<img width="364" alt="image" src="https://github.com/user-attachments/assets/6da69cc8-5dc7-4e3b-a850-2dd77c0274f2">
+<img width="364" alt="393326084-6da69cc8-5dc7-4e3b-a850-2dd77c0274f2" src="https://github.com/user-attachments/assets/ce233cea-a615-4c15-a483-201b04fa9fe3" />
 
 ## Rationale
 
