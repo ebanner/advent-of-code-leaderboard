@@ -1,6 +1,6 @@
 # advent-of-code-leaderboard
 
-Slackbot which posts a daily real-time collaborative AoC leaderboard and message notifications when someone gets a Star ⭐️
+Slackbot which posts a daily collaborative AoC leaderboard (updated throughout the day) and message notifications when someone gets a Star ⭐️
 
 ## Features
 
