@@ -4,7 +4,7 @@ Slackbot which posts a daily collaborative AoC leaderboard (updated throughout t
 
 ## Features
 
-### Real-time Collaborative Leaderboard
+### Collaborative Leaderboard
 
 Updates every 15 minutes using the [Advent of Code](https://adventofcode.com) API
 
