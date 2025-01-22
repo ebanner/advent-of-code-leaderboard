@@ -17,10 +17,74 @@
 <div id="root"></div>
 <script type="text/babel">
 
-function main(data) {
+function getTimestamps(user, leaderboard) {
+    const timestamps = [];
+    const completionDayLevel = leaderboard.members[user].completion_day_level;
+    let starNumber = 1;
+
+    for (let dayNumber = 1; dayNumber <= 25; dayNumber++) {
+        try {
+            const day = completionDayLevel[String(dayNumber)];
+
+            try {
+                if (day['1'] && day['1']['get_star_ts']) {
+                    timestamps.push(day['1']['get_star_ts']);
+                    starNumber += 1;
+                }
+            } catch (e) {
+                // Ignore if the first star doesn't exist
+            }
+
+            try {
+                if (day['2'] && day['2']['get_star_ts']) {
+                    timestamps.push(day['2']['get_star_ts']);
+                    starNumber += 1;
+                }
+            } catch (e) {
+                // Ignore if the second star doesn't exist
+            }
+
+        } catch (e) {
+            // Ignore if the day doesn't exist
+            continue;
+        }
+    }
+
+    return timestamps.sort((a, b) => a - b);
+}
+
+
+function getUsers(leaderboard) {
+    return Object.keys(leaderboard.members);
+}
+
+
+function getUser(userId, leaderboard) {
+    // if (userId === '2848430') {
+    //     return 'ebanner';
+    // } else {
+    //     return userId;
+    // }
+    return leaderboard.members[userId].name;
+}
+
+
+function main(leaderboard) {
     function App() {
+        let timestamps = {};
+
+        const users = getUsers(leaderboard);
+
+        users.forEach(user => {
+            timestamps[getUser(user, leaderboard)] = getTimestamps(user, leaderboard);
+        });
+
+        timestamps = Object.fromEntries(
+            Object.entries(timestamps).filter(([user, T]) => T.length >= 1)
+        );
+
         return (
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            <pre>{JSON.stringify(timestamps, null, 2)}</pre>
         );
     }
 
@@ -36,7 +100,7 @@ fetch(`${CORS_PROXY_URL}/${URL}`, {
         'XCookie': ...
     }
 }).then(response => response.json())
-.then(data => main(data));
+.then(leaderboard => main(leaderboard));
 
 </script>
 </body>
