@@ -8,6 +8,30 @@
     <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <style>
+        body {
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text color */
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        h1, h2, p {
+            color: #ffffff;
+        }
+        h1 {
+            font-size: 32px;  /* Adjust the font size to a smaller value */
+            font-weight: 400; /* Use a lighter font weight (e.g., 300, 400) */
+            letter-spacing: 1px; /* Add some letter spacing to improve readability */
+            margin-bottom: 10px; /* Reduce bottom margin for better spacing */
+        }
+        a {
+            color: #1e90ff; /* Bright link color */
+        }
+    </style>
 </head>
 
 <style>
@@ -17,7 +41,7 @@
 <div id="root"></div>
 <script type="text/babel">
 
-function getTimestamps(user, leaderboard) {
+function getUserTimestamps(user, leaderboard) {
     const timestamps = [];
     const completionDayLevel = leaderboard.members[user].completion_day_level;
     let starNumber = 1;
@@ -60,47 +84,142 @@ function getUsers(leaderboard) {
 
 
 function getUser(userId, leaderboard) {
-    // if (userId === '2848430') {
-    //     return 'ebanner';
-    // } else {
-    //     return userId;
-    // }
-    return leaderboard.members[userId].name;
+    const user = leaderboard.members[userId].name.split(' ')[0];
+    return user;
+}
+
+
+function getTimestamps(leaderboard) {
+    let timestamps = {};
+
+    const users = getUsers(leaderboard);
+
+    users.forEach(user => {
+        timestamps[getUser(user, leaderboard)] = getUserTimestamps(user, leaderboard);
+    });
+
+    timestamps = Object.fromEntries(
+        Object.entries(timestamps).filter(([user, T]) => T.length >= 1)
+    );
+
+    return timestamps;
+}
+
+
+function getChart(timestamps, leaderboard) {
+    const canvasRef = React.useRef(null);
+
+    const colors = [
+        'red', 'blue', 'green', 'purple', 'orange', 'pink', 'brown', 'cyan'
+    ];
+
+    const sortedUserScores = Object.entries(leaderboard['members'])
+        .filter(([userId, data]) => data['local_score'] > 0)
+        .map(([userId, data]) => [data['local_score'], getUser(userId, leaderboard)])
+        .sort((a, b) => b[0] - a[0]);  // Sort in descending order
+
+    const sortedUsers = sortedUserScores.map(([_, user]) => user);
+
+    // Prepare datasets for each user
+    const datasets = sortedUsers.map((user, index) => ({
+        label: user,
+        data: timestamps[user].map((ts, i) => ({
+            x: new Date(ts * 1000),  // Convert timestamp to Date object
+            y: i + 1   // Sequential values: 1, 2, 3, 4, 5 per user
+        })),
+        borderColor: colors[index % colors.length],  // Assign colors cyclically
+        backgroundColor: colors[index % colors.length],  // Same for fill effect
+        borderWidth: 2,
+        tension: 0.1
+    }));
+
+    // Chart.js configuration
+    const chartConfig = {
+        type: 'line',
+        data: {
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'chartArea',  // Places legend inside the chart
+                    align: 'start',         // Align legend to the upper left
+                    labels: {
+                        boxWidth: 15,        // Adjust legend icon size
+                        font: {
+                            size: 12         // Adjust font size
+                        },
+                        padding: 20,         // Add spacing to push the legend down
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 20,   // Shift chart content right
+                    right: 10   // Add some right padding if needed
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day'  // Show data by day
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Stars'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    React.useEffect(() => {
+        // Render the chart
+        const ctx = canvasRef.current.getContext('2d');
+        const chartInstance = new Chart(ctx, chartConfig);
+
+        // Cleanup function to destroy the chart when component unmounts
+        return () => {
+            chartInstance.destroy();
+        };
+    }, []);
+
+    return canvasRef;
 }
 
 
 function main(leaderboard) {
     function App() {
-        let timestamps = {};
+        const timestamps = getTimestamps(leaderboard)
 
-        const users = getUsers(leaderboard);
-
-        users.forEach(user => {
-            timestamps[getUser(user, leaderboard)] = getTimestamps(user, leaderboard);
-        });
-
-        timestamps = Object.fromEntries(
-            Object.entries(timestamps).filter(([user, T]) => T.length >= 1)
-        );
+        const canvasRef = getChart(timestamps, leaderboard)
 
         return (
-            <pre>{JSON.stringify(timestamps, null, 2)}</pre>
+            <div>
+                <h1 style={{ textAlign: 'center' }}>🎄 Advent of Code Virtual Coffee 2024</h1>
+                <canvas ref={canvasRef}></canvas>
+            </div>
         );
     }
 
     ReactDOM.render(<App />, document.getElementById('root'));
 }
 
-const CORS_PROXY_URL = ...
-const URL = ...
+const CORS_PROXY_URL = atob('aHR0cHM6Ly92N3F6a200Z3kzN2Z6eXdpczR1a3B2aWU0cTBjaW9sZC5sYW1iZGEtdXJsLnVzLWVhc3QtMS5vbi5hd3M=')
+const URL = atob('aHR0cHM6Ly9hZHZlbnRvZmNvZGUuY29tLzIwMjQvbGVhZGVyYm9hcmQvcHJpdmF0ZS92aWV3LzM2MzQ5Ni5qc29u')
 
-fetch(`${CORS_PROXY_URL}/${URL}`, {
-    method: 'GET',
-    headers: {
-        'XCookie': ...
-    }
-}).then(response => response.json())
-.then(leaderboard => main(leaderboard));
+fetch(`${CORS_PROXY_URL}/${URL}`)
+  .then(response => response.json())
+  .then(leaderboard => main(leaderboard));
 
 </script>
 </body>
